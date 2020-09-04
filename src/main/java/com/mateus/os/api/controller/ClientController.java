@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.mateus.os.domain.model.Client;
 import com.mateus.os.domain.repository.ClientRepository;
+import com.mateus.os.domain.service.CrudClientService;
 
 @RestController
 @RequestMapping("/clients")
@@ -28,13 +29,16 @@ public class ClientController {
 	@Autowired
 	private ClientRepository clientRepository;
 	
+	@Autowired
+	private CrudClientService crudClient;
+	
 	@GetMapping
 	public List<Client> list() {
 		return clientRepository.findAll();
 	}
 	
 	@GetMapping("/{clientId}")
-	public ResponseEntity<Client> buscar(@PathVariable Long clientId) {
+	public ResponseEntity<Client> find(@PathVariable Long clientId) {
 		Optional<Client> client = clientRepository.findById(clientId);
 		
 		if(client.isPresent()) {
@@ -46,12 +50,12 @@ public class ClientController {
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public Client adicionar(@Valid @RequestBody Client client) {
-		return clientRepository.save(client);
+	public Client add(@Valid @RequestBody Client client) {
+		return crudClient.save(client);
 	}
 	
 	@PutMapping("/{clientId}")
-	public ResponseEntity<Client> atualizar(@Valid @PathVariable Long clientId,
+	public ResponseEntity<Client> update(@Valid @PathVariable Long clientId,
 			@RequestBody Client client) {
 		
 		if(!clientRepository.existsById(clientId)) {
@@ -59,18 +63,18 @@ public class ClientController {
 		}
 		
 		client.setId(clientId);
-		client = clientRepository.save(client);
+		client = crudClient.save(client);
 		
 		return ResponseEntity.ok(client);
 	}
 	
 	@DeleteMapping("/{clientId}")
-	public ResponseEntity<Void> remover(@PathVariable Long clientId) {
+	public ResponseEntity<Void> delete(@PathVariable Long clientId) {
 		if(!clientRepository.existsById(clientId)) {
 			return ResponseEntity.notFound().build();
 		}
 		
-		clientRepository.deleteById(clientId);
+		crudClient.delete(clientId);
 		
 		return ResponseEntity.noContent().build();
 	}
