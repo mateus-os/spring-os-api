@@ -21,10 +21,10 @@ import com.mateus.os.domain.exception.BusinessException;
 
 @ControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
-	
+
 	@Autowired
 	private MessageSource messageSource;
-	
+
 	@ExceptionHandler(BusinessException.class)
 	public ResponseEntity<Object> handleBusiness(BusinessException ex, WebRequest request) {
 		var status = HttpStatus.BAD_REQUEST;
@@ -32,31 +32,30 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 		problem.setStatus(status.value());
 		problem.setMessage(ex.getMessage());
 		problem.setDateTime(OffsetDateTime.now());
-		
+
 		return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
 	}
-	
+
 	@Override
 	protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {
-		
+
 		var fields = new ArrayList<Problem.Field>();
-		
+
 		for (ObjectError error : ex.getBindingResult().getAllErrors()) {
 			String name = ((FieldError) error).getField();
 			String message = messageSource.getMessage(error, LocaleContextHolder.getLocale());
-			
+
 			fields.add(new Problem.Field(name, message));
 		}
-		
+
 		var problem = new Problem();
 		problem.setStatus(status.value());
-		problem.setMessage("One or more fields are invalid. "
-				+ "Try again");
+		problem.setMessage("One or more fields are invalid. " + "Try again");
 		problem.setDateTime(OffsetDateTime.now());
 		problem.setFields(fields);
-		
+
 		return super.handleExceptionInternal(ex, problem, headers, status, request);
 	}
-	
+
 }

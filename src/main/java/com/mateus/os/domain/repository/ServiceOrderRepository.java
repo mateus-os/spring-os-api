@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.mateus.os.domain.model.ServiceOrder;
 
 @Repository
-public interface ServiceOrderRepository extends JpaRepository<ServiceOrder, Long>{
+public interface ServiceOrderRepository extends JpaRepository<ServiceOrder, Long> {
 
 }

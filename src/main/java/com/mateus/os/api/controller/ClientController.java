@@ -28,54 +28,53 @@ public class ClientController {
 
 	@Autowired
 	private ClientRepository clientRepository;
-	
+
 	@Autowired
 	private CrudClientService crudClient;
-	
+
 	@GetMapping
 	public List<Client> list() {
 		return clientRepository.findAll();
 	}
-	
+
 	@GetMapping("/{clientId}")
 	public ResponseEntity<Client> find(@PathVariable Long clientId) {
 		Optional<Client> client = clientRepository.findById(clientId);
-		
-		if(client.isPresent()) {
+
+		if (client.isPresent()) {
 			return ResponseEntity.ok(client.get());
 		}
-		
+
 		return ResponseEntity.notFound().build();
 	}
-	
+
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public Client add(@Valid @RequestBody Client client) {
 		return crudClient.save(client);
 	}
-	
+
 	@PutMapping("/{clientId}")
-	public ResponseEntity<Client> update(@Valid @PathVariable Long clientId,
-			@RequestBody Client client) {
-		
-		if(!clientRepository.existsById(clientId)) {
+	public ResponseEntity<Client> update(@Valid @PathVariable Long clientId, @RequestBody Client client) {
+
+		if (!clientRepository.existsById(clientId)) {
 			return ResponseEntity.notFound().build();
 		}
-		
+
 		client.setId(clientId);
 		client = crudClient.save(client);
-		
+
 		return ResponseEntity.ok(client);
 	}
-	
+
 	@DeleteMapping("/{clientId}")
 	public ResponseEntity<Void> delete(@PathVariable Long clientId) {
-		if(!clientRepository.existsById(clientId)) {
+		if (!clientRepository.existsById(clientId)) {
 			return ResponseEntity.notFound().build();
 		}
-		
+
 		crudClient.delete(clientId);
-		
+
 		return ResponseEntity.noContent().build();
 	}
 }

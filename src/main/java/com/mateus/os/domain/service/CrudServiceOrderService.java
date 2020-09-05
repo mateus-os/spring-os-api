@@ -17,18 +17,18 @@ public class CrudServiceOrderService {
 
 	@Autowired
 	private ServiceOrderRepository soRepository;
-	
+
 	@Autowired
 	private ClientRepository clientRepository;
-	
+
 	public ServiceOrder create(ServiceOrder so) {
 		Client client = clientRepository.findById(so.getClient().getId())
 				.orElseThrow(() -> new BusinessException("Client not found"));
-		
+
 		so.setClient(client);
 		so.setStatus(StatusSO.OPEN);
 		so.setOpenDate(OffsetDateTime.now());
-		
+
 		return soRepository.save(so);
 	}
 }

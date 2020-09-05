@@ -12,17 +12,17 @@ public class CrudClientService {
 
 	@Autowired
 	private ClientRepository clientRepository;
-	
+
 	public Client save(Client client) {
 		Client clientExistent = clientRepository.findByEmail(client.getEmail());
-		
+
 		if (clientExistent != null && !clientExistent.equals(client)) {
 			throw new BusinessException("That e-mail is taken, try another");
 		}
-		
+
 		return clientRepository.save(client);
 	}
-	
+
 	public void delete(Long clientId) {
 		clientRepository.deleteById(clientId);
 	}
