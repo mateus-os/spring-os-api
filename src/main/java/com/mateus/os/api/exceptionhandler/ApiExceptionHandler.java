@@ -18,6 +18,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import com.mateus.os.domain.exception.BusinessException;
+import com.mateus.os.domain.exception.EntityNotFoundException;
 
 @ControllerAdvice
 public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
@@ -25,9 +26,22 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
 	@Autowired
 	private MessageSource messageSource;
 
+	@ExceptionHandler(EntityNotFoundException.class)
+	public ResponseEntity<Object> handleEntityNotFound(EntityNotFoundException ex, WebRequest request) {
+		var status = HttpStatus.NOT_FOUND;
+
+		var problem = new Problem();
+		problem.setStatus(status.value());
+		problem.setMessage(ex.getMessage());
+		problem.setDateTime(OffsetDateTime.now());
+
+		return handleExceptionInternal(ex, problem, new HttpHeaders(), status, request);
+	}
+
 	@ExceptionHandler(BusinessException.class)
 	public ResponseEntity<Object> handleBusiness(BusinessException ex, WebRequest request) {
 		var status = HttpStatus.BAD_REQUEST;
+
 		var problem = new Problem();
 		problem.setStatus(status.value());
 		problem.setMessage(ex.getMessage());
